@@ -1,4 +1,4 @@
-package com.zy.serviceImpl;
+package com.zy.serviceimpl;
 
 
 import com.config.ThreadUtil;
@@ -9,16 +9,14 @@ import com.zy.mapper.ShopCarMapper;
 import com.zy.service.ShopCarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.misc.ThreadGroupUtils;
-
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import static java.lang.Thread.sleep;
 
+/**
+ * @author czy
+ */
 @Service("shopCarServiceImpl")
 public class ShopCarServiceImpl implements ShopCarService{
 
@@ -29,17 +27,16 @@ public class ShopCarServiceImpl implements ShopCarService{
     List<Car> list1;
     int total;
 
-//    @Override
-//    public void run() {
-//        for(int i=0;i<list1.size();i++){
-//            System.out.println(list1.get(i).getAddress());
-//            total+=shopCarMapper.insertsopcar(list1.get(i));
-//        }
-//    }
-
+    /**
+     *
+     * @param session
+     * @return
+     * @throws InterruptedException
+     */
     @Override
-    public String insertsopcar(HttpSession session) throws InterruptedException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+    public String insertSopcar(HttpSession session) throws InterruptedException {
+        //设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String applicationData = df.format(new Date()).substring(0,10);
         User user = (User) session.getAttribute("user");
         String singleNumber=UUID.randomUUID().toString();
@@ -69,14 +66,11 @@ public class ShopCarServiceImpl implements ShopCarService{
             car.setAddress(address);
             car.setNeedsTime(needsTime);
             car.setTotal(total);
-            //total=shopCarMapper.insertsopcar(car);
-            System.out.println(car.getAddress());
             list.add(car);
         }
         int num=list.size()/10+1;
         total=0;
         session.setAttribute("num",total);
-        System.out.println(num);
         Thread t = null;
         for(int i=0;i<num;i++){
             list1=list.subList(i*10,Math.min((i+1)*10,list.size()));
@@ -85,9 +79,7 @@ public class ShopCarServiceImpl implements ShopCarService{
             sleep(1000);
         }
         t.stop();
-        System.out.println("aaaaaaaaaa");
         total= (int) session.getAttribute("num");
-        System.out.println(total+" "+list.size());
         if(total==list.size()) {
             return "sucesss";
         }
@@ -96,8 +88,14 @@ public class ShopCarServiceImpl implements ShopCarService{
         }
     }
 
+    /**
+     *
+     * @param commodity
+     * @param session
+     * @return
+     */
     @Override
-    public String addcommodity(Commodity commodity,HttpSession session) {
+    public String addCommodity(Commodity commodity,HttpSession session) {
         HashMap<Commodity,Integer> hashshopcar = (HashMap<Commodity, Integer>) session.getAttribute("shopcar");
         if(hashshopcar==null){
             hashshopcar = new HashMap<>();
@@ -109,9 +107,6 @@ public class ShopCarServiceImpl implements ShopCarService{
         }
         else{
             hashshopcar.put(commodity,1);
-        }
-        for(Commodity key:hashshopcar.keySet()){
-            System.out.println("ProductName:"+key.getProductName());
         }
         return "success";
     }

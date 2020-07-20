@@ -2,12 +2,15 @@ package com.zy.entity;
 
 import lombok.Data;
 
+/**
+ * @author czy
+ */
 @Data
 public class Commodity {
-    private String productName;
     //商品名字
-    private String specification;
+    private String productName;
     //规格
-    private int quantity;
+    private String specification;
     //数量
+    private int quantity;
 }

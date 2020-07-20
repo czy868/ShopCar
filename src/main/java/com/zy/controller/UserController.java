@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.servlet.http.HttpSession;
 
+/**
+ * @author czy
+ */
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -20,15 +22,13 @@ public class UserController {
 
     /**
      * 登录
-     * @param czy
+     * @param user
      * @param session
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/login")
     public User login(@RequestBody User user, HttpSession session){
-        System.out.println("欢迎");
-        //return "aaa";
         User user1=userService.selectUser((User) user);
         session.setAttribute("user",user1);
         return user1;

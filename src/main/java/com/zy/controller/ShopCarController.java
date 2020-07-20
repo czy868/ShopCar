@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * @author czy
+ */
 @Controller
 @RequestMapping("/shopcar")
 @CrossOrigin
@@ -33,10 +35,9 @@ public class ShopCarController {
      */
     @ResponseBody
     @RequestMapping("/add")
-    public String addcommodity(@RequestBody Commodity commodity, HttpSession session){
+    public String addCommodity(@RequestBody Commodity commodity, HttpSession session){
         User user = (User) session.getAttribute("user");
-        System.out.println(user.getName()+" "+user.getPassword()+" "+user.getSector());
-        return shopCarService.addcommodity(commodity,session);
+        return shopCarService.addCommodity(commodity,session);
     }
 
     /**
@@ -47,7 +48,7 @@ public class ShopCarController {
      */
     @ResponseBody
     @RequestMapping("/insertsopcar")
-    public String insertsopcar(HttpSession session) throws InterruptedException {
-        return shopCarService.insertsopcar(session);
+    public String insertSopcar(HttpSession session) throws InterruptedException {
+        return shopCarService.insertSopcar(session);
     }
 }

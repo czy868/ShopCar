@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+
+/**
+ * @author czy
+ */
 @Service("threadUtil")
 public class ThreadUtil extends Thread{
 
