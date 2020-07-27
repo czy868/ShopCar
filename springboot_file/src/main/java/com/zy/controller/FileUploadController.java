@@ -37,8 +37,6 @@ public class FileUploadController {
     public FileUploadResult upload(MultipartFile uploadFile) throws Exception {
         String key = uploadFile.getOriginalFilename();
         long len = uploadFile.getSize();
-        System.out.println(key);
-        System.out.println(len);
         return fileUploadService.upload(uploadFile);
     }
 
@@ -50,14 +48,9 @@ public class FileUploadController {
      */
     @PostMapping("/mutilUpload")
     public void mutilUpload(MultipartFile uploadFile) throws Exception {
-        System.out.println("aaaaa");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 300, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(3), new ThreadPoolExecutor.CallerRunsPolicy());
         ServerSocket SS = new ServerSocket(8181);
-        System.out.println("aa");
         while (true){
-            System.out.println("c");
-            //Socket soc = SS.accept();
-            System.out.println("d");
             executor.execute(new ThreadConfig(uploadFile));
         }
     }

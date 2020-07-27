@@ -22,16 +22,17 @@ import java.util.List;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
     // 允许上传的格式
-    private static final String[] IMAGE_TYPE = new String[]{".bmp", ".jpg", ".jpeg", ".gif", ".png"};
+    private static final String[] IMAGE_TYPE = new String[]{".bmp", ".jpg", ".jpeg", ".gif", ".png","doc","docx","pdf"};
+
     @Autowired
     private OSS ossClient;
     @Autowired
     private AliyunConfig aliyunConfig;
 
     /**
-     * @author czy
-     * @desc 文件上传
-     * @date 2019-07-31 11:31
+     * 文件上传
+     * @param uploadFile
+     * @return
      */
     @Override
     public FileUploadResult upload(MultipartFile uploadFile) {
@@ -71,9 +72,9 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     /**
-     * @author czy
-     * @desc 生成路径以及文件名 例如：//images/2019/08/10/15564277465972939.jpg
-     * @date 2019-07-31 11:31
+     *
+     * @param sourceFileName
+     * @return
      */
     @Override
     public String getFilePath(String sourceFileName) {
@@ -86,9 +87,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     /**
-     * @author czy
-     * @desc 查看文件列表
-     * @date 2019-07-31 11:31
+     * 查看文件泪列表
+     * @return
      */
     @Override
     public List<OSSObjectSummary> list() {
@@ -101,9 +101,9 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     /**
-     * @author czy
-     * @desc 删除文件
-     * @date 2019-07-31 11:31
+     * 删除文件
+     * @param objectName
+     * @return
      */
     @Override
     public FileUploadResult delete(String objectName) {
@@ -117,9 +117,10 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     /**
-     * @author czy
-     * @desc 下载文件
-     * @date 2019-07-31 11:31
+     * 下载文件
+     * @param os
+     * @param objectName
+     * @throws IOException
      */
     @Override
     public void exportOssFile(OutputStream os, String objectName) throws IOException {

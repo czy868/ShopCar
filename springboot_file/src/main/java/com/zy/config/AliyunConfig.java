@@ -16,11 +16,11 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationProperties(prefix = "aliyun")
 @Data
 public class AliyunConfig {
-    private String endpoint="oss-cn-beijing.aliyuncs.com";
-    private String accessKeyId="LTAI4G61EhRKGBhbz52Zrb5E";
-    private String accessKeySecret="4N1zBBVQOcPS3fkegpzZUyCwDk9OCD";
-    private String bucketName="bucketczyno1";
-    private String urlPrefix="https://bucketczyno1.oss-cn-beijing.aliyuncs.com/";
+    private String endpoint;
+    private String accessKeyId;
+    private String accessKeySecret;
+    private String bucketName;
+    private String urlPrefix;
 
     /**
      * 连接

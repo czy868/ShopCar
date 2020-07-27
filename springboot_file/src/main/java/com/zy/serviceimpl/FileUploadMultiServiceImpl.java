@@ -6,9 +6,11 @@ import com.aliyun.oss.model.DownloadFileRequest;
 import com.aliyun.oss.model.DownloadFileResult;
 import com.zy.config.AliyunOSSUpload;
 import com.zy.controller.FileUploaderMultiController;
+import com.zy.entity.ConfigBeanValue;
 import com.zy.service.FileUploadMultiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +25,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class FileUploadMultiServiceImpl implements FileUploadMultiService {
 
-    private static String endpoint = "oss-cn-beijing.aliyuncs.com";;
-    private static String accessKeyId = "LTAI4G61EhRKGBhbz52Zrb5E";
-    private static String accessKeySecret = "4N1zBBVQOcPS3fkegpzZUyCwDk9OCD";
-    private static String bucketName = "bucketczyno1";
+    @Autowired
+    private ConfigBeanValue configBeanValue;
+
     public static OSSClient client = null;
     private static Logger logger = LoggerFactory.getLogger(FileUploaderMultiController.class);
 
@@ -37,14 +38,13 @@ public class FileUploadMultiServiceImpl implements FileUploadMultiService {
      */
     @Override
     public String fileUpload(MultipartFile uploadFile) {
-        System.out.println(uploadFile.getSize());
         Date date = new Date();
         String beginTime = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         String key = uploadFile.getOriginalFilename();
-        client = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+        client = new OSSClient(configBeanValue.endpoint, configBeanValue.accessKeyId, configBeanValue.accessKeySecret);
         try {
-            String uploadId = AliyunOSSUpload.claimUploadId(bucketName, key);
+            String uploadId = AliyunOSSUpload.claimUploadId(configBeanValue.bucketName, key);
             final long partSize = 5 * 1024 * 1024L;
             long fileLength = uploadFile.getSize();
             int partCount = (int) (fileLength / partSize);
@@ -59,7 +59,7 @@ public class FileUploadMultiServiceImpl implements FileUploadMultiService {
             for (int i = 0; i < partCount; i++) {
                 long startPos = i * partSize;
                 long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
-                executorService.execute(new AliyunOSSUpload(uploadFile, startPos, curPartSize, i + 1, uploadId, key, bucketName));
+                executorService.execute(new AliyunOSSUpload(uploadFile, startPos, curPartSize, i + 1, uploadId, key, configBeanValue.bucketName));
             }
             executorService.shutdown();
             while (!executorService.isTerminated()) {
@@ -69,33 +69,16 @@ public class FileUploadMultiServiceImpl implements FileUploadMultiService {
                     e.printStackTrace();
                 }
             }
-
-            /**
-             * partETags(上传块的ETag与块编号（PartNumber）的组合) 如果校验与之前计算的分块大小不同，则抛出异常
-             */
-            System.out.println(AliyunOSSUpload.partETags.size() + " -----   " + partCount);
             if (AliyunOSSUpload.partETags.size() != partCount) {
                 throw new IllegalStateException("OSS分块大小与文件所计算的分块大小不一致");
             } else {
                 logger.info("将要上传的文件名  " + key + "\n");
             }
-
-            /*
-             * 列出文件所有的分块清单并打印到日志中，该方法仅仅作为输出使用
-             */
             AliyunOSSUpload.listAllParts(uploadId);
-
-            /*
-             * 完成分块上传
-             */
             AliyunOSSUpload.completeMultipartUpload(uploadId);
-
-            // 返回上传文件的URL地址
-            // return endpoint.replaceFirst("http://","http://"+bucketName+".")+"/"+key ;
             Date date2 = new Date();
             String endTime = date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
             return beginTime + "========" + endTime;
-
         } catch (Exception e) {
             logger.error("上传失败！", e);
             return "上传失败！";
@@ -114,9 +97,9 @@ public class FileUploadMultiServiceImpl implements FileUploadMultiService {
      */
     @Override
     public void fileDownload(String objectName) throws Throwable {
-        OSS ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClient(configBeanValue.endpoint, configBeanValue.accessKeyId, configBeanValue.accessKeySecret);
         // 下载请求，10个任务并发下载，启动断点续传。
-        DownloadFileRequest downloadFileRequest = new DownloadFileRequest(bucketName, objectName);
+        DownloadFileRequest downloadFileRequest = new DownloadFileRequest(configBeanValue.bucketName, objectName);
         downloadFileRequest.setDownloadFile("test.png");
         downloadFileRequest.setPartSize(1 * 1024 * 1024);
         downloadFileRequest.setTaskNum(10);
